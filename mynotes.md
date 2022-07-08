@@ -88,7 +88,7 @@ def todo_list(request):
     context = {
         'todos' : todos
     }
-    return render(request, 'todo_list.html', context)
+    return render(request, 'todo/todo_list.html', context)
 ```
 
 - todo_list.html:
@@ -101,8 +101,230 @@ def todo_list(request):
 {% endblock content %}
 ```
 
+- urls.py
+- todo_list viewimizi import ettik ve urlpattern'e link adını vererek girdik.
 
+```py
+from .views import todo_list
 
+urlpatterns = [
+    path("list/", todo_list, name="list")
+]
+```
 
+- http://127.0.0.1:8000/list/ adresine girdiğimizde bize querylist olarak eklediğimiz görevleri listeleyecek. tekrar template dosyamıza dönüp bunu biraz daha kullanıcının anlayacağı şekle çevireceğiz. 
+- bir for döngüsü kullanarak listeleyeceğiz ve daha güzel bir görüntü ortaya çıkacak. 
 
+```html
+{% extends 'todo/base.html' %} 
+{% block content %}
 
+<h2>TODO List</h2>
+<hr />
+<ul>
+    {% for todo in todos %}
+
+    <li>{{todo}}</li>
+    {% endfor %}
+</ul>
+
+{% endblock content %}
+``` 
+
+- forms.py:
+- database'de bir veri oluşturabilmek için bir form'a ihtiyacımız var. Django'nun bize sağladığı kolaylıklardan biri de database'de oluşturduğumuz bir modeli form olarak kullanmamızı sağlamak. yani sıfırdan form yazmak yerine daha önce oluşturduğumuz model'ı form olarak kullanacağız.
+- bir class tanımlıyoruz ve içerisine Meta class'ı ile kullanacağımız model'in ismini ve kullanılacak alanları giriyoruz.
+
+```py
+from django import forms
+from .models import Todo
+
+class TodoForm(forms.ModelForm):
+    class Meta:
+        model = Todo
+        fields = '__all__'
+```
+
+- views.py:
+- create işlemimizi gerçekleştirelim. form isminde bir değişken oluşturduk ve forms.py'dan import ettiğimiz TodoForm()'u bu değişkene atadık. sırada bir if yapısı kurarak kontrol sağlamamız gerekiyor. create işlemi bir POST methodudur. eğer gelen request POST ise form değişkeni içerisine request.POST ile gelen verileri eşitleyeceğiz. bu kontrol içerisinde bir if döngüsü daha olacak. bu da validation işlemi yani form.is_valid() olacak. eğer form valid ise form.save() ile değişkenimiz yani form son halini alacak. ardından return ile redirect etmek istediğimiz sayfaya götürecek.
+- kontroller sağlandıktan sonra ise bize 'form' adını verdiğimiz contexti oluşturacak ve yeni oluşturacağımız template'i render edecek.
+
+```py
+from .forms import TodoForm
+
+def todo_create(request):
+    form = TodoForm()
+    if request.method == 'POST':
+        form = TodoForm(request.POST)
+        if form.is_valid:
+            form.save()
+        return redirect('list')
+    context = {
+        'form' : form
+    }
+    return render(request, 'todo/todo_add.html',context)
+
+```
+
+- todo_add.html:
+- template'imizi oluşturduk. extend ve block işlemlerinden sonra bloğumuzun içerisine method'u POST bir html formu yerleştirdik. formumuzun içerisine django'nun veri girişini sağlaması için gereken csrf_token'i yerleştirdik. daha sonra view'de oluşturduğumuz context olan form'u koyduk ve bir submit inputu oluşturduk.
+
+```html.py
+{% extends 'todo/base.html' %} 
+{% block content %}
+
+<h2>TODO Add</h2>
+<hr />
+
+<form action="" method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Add">
+
+</form>
+
+{% endblock content %}
+
+```
+
+- urls.py:
+- view'de oluşturduğumuz todo_create'i buraya import ettik ve urlpattern'e yerleştirdik.
+
+- views.py:
+- sıradaki işlemimiz update. öncelikle Todo modelimiz içerisinden id'si "id" olan bir obje çekeceğiz ve bunu bir değişkene atayacağız.
+- bir form oluşturacağız ve bu formun içine TodoForm()'u koyacağız. fakat TodoForm'un instance'ı az önce oluşturduğumuz değişkene atıyoruz.
+- artık yapacağımız işlem create işlemi ile aynı. bir if döngüsü ile create için yaptığımız işlemlerin aynısını burada da yapıyoruz. tek fark request.POST ile instance=todo'yu karşılaştırması. ikisini karşılaştırdıktan sonra instance=todo'dan gelen verilerle override ediyor. tekrar validasyon işlemi ve redirect işleminden sonra fonksiyondan çıkıyor.
+- yine ek olarak context'imiz içerisine todo haricinde form'u koyuyoruz.
+
+```py 
+def todo_update(request, id):
+    todo = Todo.objects.get(id=id)
+    form = TodoForm(instance=todo)
+
+    if request.method == 'POST':
+        form = TodoForm(request.POST, instance=todo)
+        if form.is_valid():
+            form.save()
+        return redirect('list')
+
+    context = {
+        'todo': todo,
+        'form': form
+    }
+    return render(request, 'todo/todo_update.html', context)
+```
+
+- todo_update.html:
+- extend ve block işlemini yaptıktan sonra block içerisine update'ten sonra görmek istediğimiz verileri giriyoruz. örneğin: todo.title ve todo.description.
+- update işlemi aynı zamanda bir create işlemidir. yine Post methodu gelecek ve var olanı değiştireceği için todo_add.html içerisindeki html formunu bu template'in içerisine koymamız gerekiyor.
+- view kısmında zaten bunu göstermiştik. context todo(title ve description'ı gösteren bölüm) ve form olmak üzere iki öğreye sahipti.
+
+```html.py
+{% extends 'todo/base.html' %} 
+{% block content %}
+
+<h2>TODO Update</h2>
+<hr />
+
+{{ todo.title}}
+{{ todo.description}}
+
+<form action="" method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Update">
+
+</form>
+
+{% endblock content %}
+
+```
+
+- urls.py:
+- view'de oluşturduğumuz todo_update'i buraya import ettik ve urlpatterne yerleştirdik. fakat ufak bir fark var. "update" linki bir id alır. bunu göstermek zorundayız:
+
+```py
+from .views import todo_update
+
+urlpatterns = [
+    path("update/<int:id>/", todo_update, name="update")
+]
+```
+
+- views.py:
+- delete işlemi gerçekleştireceğiz. update işlemindeki gibi todo değişkeni atadık ve Todo objesi içerisinden id'si "id" olan bir veriyi aldık. if döngüsü ile method eğer 'POST' ise oluşturduğumuz değişkeni delete() dedikten sonra 'list'e redirect ettik.
+- context'imize de görmek istediğimiz todo'yu yani yukarıda aldığımız veriyi yerleştirdik.
+
+```py
+def todo_delete(request, id):
+    todo = Todo.objects.get(id=id)
+    if request.method == 'POST':
+        todo.delete()
+        return redirect('list')
+    context = {
+        'todo' : todo
+    }
+    return render(request, 'todo/todo_delete.html', context)
+```
+
+- todo_delete.html:
+
+- update htmli kopyaladık ve bazı değişiklikler yaptık. form'u kaldırdık ve yerine bir mesaj ekledik. mesajın sonuna da {{todo}} yazdık. buradaki amaç database'den çektiği title'ı bize getirmek olacak.
+
+```html
+{% extends 'todo/base.html' %} 
+{% block content %}
+
+<h2>TODO Delete</h2>
+<hr />
+
+{{ todo.title}}
+{{ todo.description}}
+
+<form action="" method="POST">
+    {% csrf_token %}
+    <p>Are you sure to delete {{todo}} </p>
+    <input type="submit" value="Yes">
+
+</form>
+
+{% endblock content %}
+```
+
+- urls.py
+- update ile aynı şekilde int:id vererek linkimizi urlpattern'e ekledik.
+
+- şu an app'imizin iskeleti hazır. fakat kullanışlı değil çünkü linklere adres girerek ulaşıyoruz. örneğin home.html'e bir a tag'i ekleyerek istediğimiz zaman homepage'e dönmemizi sağlayalım. ya da list'e gidelim.
+
+```html
+<a href = "{% url 'add' %}">Add</a>
+<a href = "{% url 'list' %}">List</a>
+```
+
+- ya da list'e girdiğimizde tıkladığımız anda update etmesini sağlayacak linkleri bağlayalım. aslında yapacağımız şey for döngüsü içerisine a tagi koymak ve url olarak "{% url 'update' todo.id %}" vermek.
+
+```html
+{% extends 'todo/base.html' %} 
+{% block content %}
+
+<h2>TODO List</h2>
+<hr />
+<ul>
+    {% for todo in todos %}
+
+        <a href="{% url 'update' todo.id %}">
+    <li>{{todo}}</li>
+    </a>
+
+    {% endfor %}
+</ul>
+
+{% endblock content %}
+
+```
+
+- şimdi update ve list template'inin içerisine delete fonksiyonu ekleyeceğiz.
+
+``html
+<a href="{% url 'delete' todo.id %}">Delete</a>
+```
