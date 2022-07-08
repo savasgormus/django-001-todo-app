@@ -9,6 +9,12 @@
 
 
 - decouple ile secretkey'i .env dosyasına kaydettik. app'imizi settings.py dosyasına girdik.
+- aynı şekilde DEBUG kısmını da .env dosyasına kaydettik ve config('DEBUG') şeklinde settings.py dosyamıza girdik.
+
+```txt
+SECRET_KEY =django-insecure-9w#v1j1dzw@k(3f=a=+f6p#+y&1f_dl6e%tn)2j%wq$vikohu$
+DEBUG = True
+```
 
 - app'imizi önce kafamızda tasarlayalım. bir yapılacak iş(title), bu işin tanımı(description), bu işin önceliği(priority), tamamlanıp tamamlanmadığı(isCompleted), bu işin oluşturulma tarihi(created_date) ve işin güncellenme tarihi(updated_date) şeklinde bir şablon oluşturacağız. 
 - bu şablonla ilgili bir model oluşturup bunu database'e işledikten sonra frontende göndereceğiz ve app'imiz son halini alacak.
@@ -21,9 +27,11 @@
 - görevin oluşturma zamanı ve güncellenme zamanını belirteceğiz. burada dikkat etmemiz gereken nokta şu: datetimefield 2 tane olacak fakat içerisine alacağı değer birinde auto_now=true, diğerinde ise auto_now_add=true.
 - bu küçük fark oluşturma ve değiştirme tarihini ayrı şekilde bize göstermeye yarayacak.
 - priority kısmına geri dönelim. bir tupple ile önceliği yazıya dökeceğiz. böylece standart bir önceliklendirmemiz olacak. priority'nin field optionsuna choices ekleyerek bu tupple'ı seçilebilir hale getirdik.
+- str(self) metoduyla da database'de nasıl görmek istediğimizi belirttik. eğer bu işlemi yapmaz ise giriş yapacağımız her item database'de "todo object" olarak görüntülenecek.
+- database'e yeni bir giriş yaptığımız için makemigrations ve migrate işlemlerini uyguladık.
 
 ```py
-models.py
+# models.py
 from django.db import models
 
 # Create your models here.
@@ -43,4 +51,31 @@ class Todo(models.Model):
 
     updated_date = models.DateTimeField(auto_now=True)
     created_date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.title
 ```
+
+- admin.py
+
+- bu oluşturduğumuz tabloyu adminboard'da görmek için register işlemi yapıyoruz. register işlemini de gerçekleştirdikten sonra bir superuser oluşturalım ve database'imizi kontrol edelim.
+- python manage.py createsuperuser
+
+```py
+from django.contrib import admin
+from .models import Todo
+
+# Register your models here.
+
+admin.site.register(Todo)
+```
+
+
+
+
+
+
+
+
+
+
