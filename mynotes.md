@@ -7,13 +7,17 @@
 - py manage.py runserver
 - py manage.py startapp todo
 
-
 - decouple ile secretkey'i .env dosyasına kaydettik. app'imizi settings.py dosyasına girdik.
 - aynı şekilde DEBUG kısmını da .env dosyasına kaydettik ve config('DEBUG') şeklinde settings.py dosyamıza girdik.
 
 ```txt
 SECRET_KEY =django-insecure-9w#v1j1dzw@k(3f=a=+f6p#+y&1f_dl6e%tn)2j%wq$vikohu$
 DEBUG = True
+```
+
+```py
+SECRET_KEY = config('SECRET_KEY')
+DEBUG = config('DEBUG')
 ```
 
 - app'imizi önce kafamızda tasarlayalım. bir yapılacak iş(title), bu işin tanımı(description), bu işin önceliği(priority), tamamlanıp tamamlanmadığı(isCompleted), bu işin oluşturulma tarihi(created_date) ve işin güncellenme tarihi(updated_date) şeklinde bir şablon oluşturacağız. 
@@ -71,8 +75,31 @@ admin.site.register(Todo)
 ```
 
 
+- database tarafında hazırladığımız bu app'i şimdi frontende yansıtmak için view-template-url üçlüsünü kullanacağız. şimdi yapacağımız işlemler aslında tamamen Crud işlemi. bu dört işlem için ayrı ayrı fonksiyonlar yazacağız, hepsi için template'lerini oluşturacağız ve templateleri urlpattern'e ekleyeceğiz.
 
+- views.py:
+- öncelikle oluşturduğumuz modeli import edelim. listelemek için function-based bir view oluşturacağız. bizim için öncemli 3 husus var. request, template_name ve context. fonksiyonumuz bir request alacak. bir değişken oluşturacağız ve models'dan gelen Todo objesi içerisindeki bütün verileri bu değişkene aktaracağız.
+contextimizi oluşturacağız ve bu dictionary içerisine bu değişkeni yerleştireceğiz. son olarak da fonksiyonumuz bize bir render return edecek. bu render içerisinde - request,template_name ve context olacak.
+```py
+from .models import Todo
 
+def todo_list(request):
+    todos = Todo.objects.all()
+    context = {
+        'todos' : todos
+    }
+    return render(request, 'todo_list.html', context)
+```
+
+- todo_list.html:
+- dosyamızı templates/todo içerisine oluşturduk ve base.html'i extend ettik. block'umuzu(base.html dosyasında content ismine sahipti) oluşturduk. bu block içerisine de 'todo_list' isimli veiw'imizde oluşturduğumuz context'i yerleştirdik(todos).
+
+```html
+{% extends 'todo/base.html' %} 
+{% block content %}
+{{ todos }}
+{% endblock content %}
+```
 
 
 
