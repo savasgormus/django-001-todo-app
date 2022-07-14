@@ -325,6 +325,6 @@ def todo_delete(request, id):
 
 - şimdi update ve list template'inin içerisine delete fonksiyonu ekleyeceğiz.
 
-``html
+```html
 <a href="{% url 'delete' todo.id %}">Delete</a>
 ```
