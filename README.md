@@ -58,7 +58,7 @@ $ python manage.py runserver
 
 ## Contact
 
-- GitHub [@your-username](https://github.com/savasgormus/)
+- GitHub (https://github.com/savasgormus/)
 
-- Linkedin [@your-linkedin](https://www.linkedin.com/in/savasgormus/)
-- Twitter [@your-twitter](https://twitter.com/savasgormus1/)
+- Linkedin (https://www.linkedin.com/in/savasgormus/)
+- Twitter (https://twitter.com/savasgormus1/)
