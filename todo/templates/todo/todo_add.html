@@ -1,14 +1,20 @@
-{% extends 'todo/base.html' %} 
+{% extends 'todo/base.html' %}
+
+<h2>Todo Add</h2>
+<hr>
+
 {% block content %}
+{% comment %} {% load crispy_forms_tags %}  {% endcomment %}
+<table>
+    <form action="" method="POST">
+        {% csrf_token %}
+        {{ form.as_table }}
 
-<h2>TODO Add</h2>
-<hr />
-
-<form action="" method="POST">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <input type="submit" value="Add">
-
-</form>
+</table>
+<input type="submit" value="Add" class="col-xs-2">
+<button style='border-style:solid; border-width:0.1px; border-radius:2px' class="col-xs-2">
+    <a href="{% url 'list' %}" style="text-decoration:none; color:black">No</a>
+</button>
+</div>
 
 {% endblock content %}

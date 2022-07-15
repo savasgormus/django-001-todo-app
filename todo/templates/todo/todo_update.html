@@ -1,20 +1,25 @@
-{% extends 'todo/base.html' %} 
+{% extends 'todo/base.html' %}
+
+<h2>Todo Update</h2>
+<hr>
 {% block content %}
-
-<h2>TODO Update</h2>
-<hr />
-
-{{ todo.title}}
-{{ todo.description}}
-
-<form action="" method="POST">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <input type="submit" value="Update">
-    <button>
-        <a href="{% url 'delete' todo.id %}">Delete</a>
-    </button>
-
-</form>
-
+<table>   
+    <ul>
+        <li>
+            Task: {{todo.title}}
+        </li>
+        <li>
+            Description: {{todo.description}}
+        </li>
+    </ul>
+    <br>
+    
+    <form action="" method="POST" class="my-class">
+        {% csrf_token %}
+        {{ form.as_table }}
+</table>
+<button type="submit" value="Update" class="btn btn-success">Update</button>
+<button class="btn btn-danger">
+    <a href="{% url 'delete' todo.id %}" style="text-decoration:none; color:black">Delete</a>
+</button>
 {% endblock content %}
