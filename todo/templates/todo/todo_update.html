@@ -3,23 +3,30 @@
 <h2>Todo Update</h2>
 <hr>
 {% block content %}
-<table>   
-    <ul>
-        <li>
-            Task: {{todo.title}}
-        </li>
-        <li>
-            Description: {{todo.description}}
-        </li>
-    </ul>
-    <br>
-    
-    <form action="" method="POST" class="my-class">
-        {% csrf_token %}
-        {{ form.as_table }}
-</table>
-<button type="submit" value="Update" class="btn btn-success">Update</button>
-<button class="btn btn-danger">
-    <a href="{% url 'delete' todo.id %}" style="text-decoration:none; color:black">Delete</a>
-</button>
+<div class="m-5 form-group">
+    <table>
+        <ul>
+            <li>
+                Task: {{todo.title}}
+            </li>
+            <li>
+                Description: {{todo.description}}
+            </li>
+        </ul>
+        <br>
+
+        <form action="" method="POST" class="my-class">
+            {% csrf_token %}
+            {{ form.as_table }}
+    </table>
+    <div class="btn-group ml-5">
+        <button type="submit" value="Update" class="btn btn-primary">Update</button>
+        <button class="btn btn-danger">
+            <a href="{% url 'delete' todo.id %}" style="text-decoration:none; color:black">Delete</a>
+        </button>
+        <button class="btn btn-info">
+            <a href="{% url 'list'%}" style="text-decoration:none; color:black">List</a>
+        </button>
+    </div>
+</div>
 {% endblock content %}

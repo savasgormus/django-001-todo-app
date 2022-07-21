@@ -1,14 +1,16 @@
 {% extends 'todo/base.html' %}
 
 {% block content %}
-<ul>
 
+<div class="list-group m-5" >
     {% for todo in todos %}
-    <li>
-        <a href="{% url 'update' todo.id %}">{{ todo }}</a>
-    </li>
+        <a href="{% url 'update' todo.id %}" class="list-group-item list-group-item-action flex-column align-items-start">{{ todo }}
+            <div class="d-flex w-100 justify-content-between">
+                <h5 class="mb-1"> {{todo.description}}</h5>
+                <small> Priority = {{ todo.priority }}</small>
+            </div>
     {% endfor %}
-</ul>
-
+        </a>
+</div>
 
 {% endblock content %}

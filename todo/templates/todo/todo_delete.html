@@ -11,10 +11,9 @@
     {% csrf_token %}
     <p>Are you sure to delete {{todo}} </p>
     <input type="submit" value="Yes">
-    <button style='border-style:solid; border-width:0.1px; border-radius:2px'>
-        <a href="{% url 'delete' todo.id %}" style="text-decoration:none; color:black">No</a>
-    </button>
-
 </form>
 
+<button style='border-style:solid; border-width:0.1px; border-radius:2px'>
+    <a href="{% url 'list' %}" style="text-decoration:none; color:black">No</a>
+</button>
 {% endblock content %}

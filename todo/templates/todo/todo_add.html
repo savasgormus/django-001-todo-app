@@ -4,17 +4,12 @@
 <hr>
 
 {% block content %}
-{% comment %} {% load crispy_forms_tags %}  {% endcomment %}
-<table>
-    <form action="" method="POST">
-        {% csrf_token %}
-        {{ form.as_table }}
-
-</table>
-<input type="submit" value="Add" class="col-xs-2">
-<button style='border-style:solid; border-width:0.1px; border-radius:2px' class="col-xs-2">
-    <a href="{% url 'list' %}" style="text-decoration:none; color:black">No</a>
-</button>
+<div class='form-group'>
+        <form class='m-5' action="" method="POST">
+            {% load crispy_forms_tags %}
+            {% crispy form %}
+            {% csrf_token %}
+            {% comment %} {{ form.as_p}}        {% endcomment %}
+    <input class="btn btn-primary" type="submit" value="Add">
 </div>
-
 {% endblock content %}

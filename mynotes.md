@@ -328,3 +328,62 @@ def todo_delete(request, id):
 ```html
 <a href="{% url 'delete' todo.id %}">Delete</a>
 ```
+
+# Authentication İşlemleri
+
+- source klasörü içerisindeki urls.py dosyasına önce linkimizi ekliyoruz ve http://127.0.0.1:8000/accounts/ adresine gidiyoruz. herhangi birşey import etmemize gerek yok. ayrıca settings.py'da login ve logout durumunda gideceği url'leri belirttik.
+
+```py
+#   main/urls.py
+    urlpatterns = [
+        path('accounts/', include('django.contrib.auth.urls')),
+    ]
+
+#   settings.py
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
+```
+
+- templates klasörü içerisinde registration adında bir klasör oluşturduk. bu klasör ismi default olduğu için django authentication işlemleri için yazacağımız bütün viewleri burada çekecek. login.html dosyamızı oluşturduk ve içerisine basit bir form koyduk. bu form bizim yazdığımız formdan farklı çünkü django kendisi otomatik olarak oluşturdu. home.html sayfasında da ufak bir değişikliğe gideceğiz ve login olup olmadığımızı görmek için şunu ekleyeceğiz:
+
+```html
+<!-- registration/login.html -->
+
+{% extends '../todo/base.html' %}
+
+{% block container %}
+    <h2>Login Page</h2>
+    <form action="" method="Post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Login">
+    </form>
+
+{% endblock container %}
+
+<!-- todo/home.html -->
+<h3>Hello {{ request.user }}!</h3>
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

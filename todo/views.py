@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from django.urls import reverse_lazy
 from django.views.generic import ListView , CreateView , UpdateView , DeleteView
 from .forms import TodoForm
+from django.contrib.auth.decorators import login_required
 
 from todo.models import Todo
 
@@ -44,6 +45,9 @@ class todo_add(CreateView):
     fields = "__all__"
     template_name = "todo/todo_add.html"
     success_url = reverse_lazy("list")
+
+
+
 
 #! update function base
 # def todo_update(request, id):
